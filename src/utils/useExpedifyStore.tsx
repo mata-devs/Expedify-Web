@@ -2,7 +2,9 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User } from "firebase/auth";
 import type { Booking, UserData } from "./type";
-
+import type { StatusBooking } from "../components/MyBookings";
+import type { CombinedChat } from "../components/chats/ChatSidebar";
+export type TabsType = "current" | "bookings" | "chat" | "menu" | "Requests";
 interface ExpedifyState {
   // Firebase user
   user: User | null;
@@ -19,14 +21,21 @@ interface ExpedifyState {
 
   mybookings: Booking[] | null;
   setMyBookings: (user: Booking[] | null) => void
-
+  showCall: boolean;
+  setShowCall: (val: boolean) => void;
   nearbyBookings: Booking[] | null;
   setNearbyBookings: (user: Booking[] | null) => void
   // Onboarding
   onboardingDone: boolean;
   setOnboardingDone: (done: boolean) => void;
 
+  selectedClient: CombinedChat | null;
+  setSelectedClient: (val: CombinedChat | null) => void;
 
+  activeTab: StatusBooking;
+  setActiveTab: (val: StatusBooking) => void;
+  currentTab: TabsType;
+  setCurrentTabs: (val: TabsType) => void;
   location: { lat: number; lng: number } | null;
   setLocation: (location: { lat: number; lng: number } | null) => void
   // Permissions
@@ -51,17 +60,25 @@ export const useExpedifyStore = create<ExpedifyState>()(
       user: null,
       userData: null,
       bookings: null,
+      activeTab: "Scheduled",
       nearbyBookings: null,
       location: null,
       onboardingDone: false,
       locationPermission: null,
       notifPermission: null,
+      showCall:false,
       hasProfile: null,
       loading: true,
-      RushBooking:null,
-      mybookings:null,
-      setRushBooking:(RushBooking)=>set({RushBooking}),
-      setMyBookings:(mybookings)=>set({mybookings}),
+      RushBooking: null,
+      currentTab: "current",
+      mybookings: null,
+      selectedClient: null,
+      setSelectedClient: (selectedClient) => set({ selectedClient }),
+      setShowCall: (showCall) => set({ showCall }),
+      setCurrentTabs: (currentTab) => set({ currentTab }),
+      setRushBooking: (RushBooking) => set({ RushBooking }),
+      setActiveTab: (activeTab) => set({ activeTab }),
+      setMyBookings: (mybookings) => set({ mybookings }),
       setUser: (user) => set({ user }),
       setLocation: (location) => set({ location }),
       setNearbyBookings: (nearbyBookings) => set({ nearbyBookings }),

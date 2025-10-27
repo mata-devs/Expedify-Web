@@ -31,7 +31,13 @@ const ChatSidebar: React.FC<Props> = ({ selectedClient, setSelectedClient }) => 
 
   const db = getFirestore();
   const auth = getAuth();
+  useEffect(() => {
 
+    const getChat = chats.find((e) => e.otherUser?.uid == selectedClient?.otherUser?.uid);
+    if (selectedClient != getChat && getChat) {
+      setSelectedClient(getChat);
+    }
+  }, [selectedClient, chats])
   useEffect(() => {
     const currentUser = auth.currentUser;
     if (!currentUser) return;
@@ -123,9 +129,9 @@ const ChatSidebar: React.FC<Props> = ({ selectedClient, setSelectedClient }) => 
               key={c.photographerID + c.clientID}
               onClick={() => setSelectedClient(c)}
               className={`flex items-center gap-3 p-3 cursor-pointer border-b hover:bg-yellow-50 ${selectedClient?.photographerID === c.photographerID &&
-                  selectedClient?.clientID === c.clientID
-                  ? "bg-yellow-100"
-                  : ""
+                selectedClient?.clientID === c.clientID
+                ? "bg-yellow-100"
+                : ""
                 }`}
             >
               <img

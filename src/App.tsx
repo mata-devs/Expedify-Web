@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
@@ -19,6 +19,7 @@ import { subscribeNearbyRushBookings } from "./services/fetchNearbyBookingsRealt
 import useRealtimeLocation from "./services/useRealtimeLocation";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RedirectedRoute from "./components/RedirectedRoute";
+import useUserCalls from "./hooks/useUserCalls";
 export const radius: number = 4000;
 const App: React.FC = () => {
   const {
@@ -90,8 +91,6 @@ const App: React.FC = () => {
 
     return () => unsub();
   }, [user?.uid]);
-
-
   useEffect(() => {
     if (!auth.currentUser) return;
     if (!location) { console.warn("Error Location", location); return; };
@@ -143,6 +142,8 @@ const App: React.FC = () => {
             <Onboarding />
           </RedirectedRoute>
         } />
+
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/signin" element={
           <RedirectedRoute>
             <SignIn />

@@ -106,9 +106,12 @@ export type Booking = {
   level?: LevelType;
   rate?: number;
   distanceKm: number;
-  location?: GeoPoint;
-  images?: ImagesPhotos
-  geohash?: string;
+  location?: {location:GeoPoint; geohash:string}[];
+  images?: ImagesPhotos;
+  tier:PhotographerLevel;
+  endTime: string | null;
+  startTime: string | null;
+  dateSeen:Date;
 };
 
 export const Levels = [

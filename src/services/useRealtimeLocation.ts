@@ -34,7 +34,7 @@ export default function useRealtimeLocation() {
       {
         enableHighAccuracy: true, // use GPS if available
         maximumAge: 1000,         // cache for 1s
-        timeout: 10000,           // wait up to 10s
+        timeout: 30000,           // wait up to 10s
       }
     );
 

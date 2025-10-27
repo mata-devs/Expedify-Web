@@ -13,6 +13,7 @@ import {
     type DocumentData,
     type QueryDocumentSnapshot,
     getFirestore,
+    getDoc,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { useEffect, useRef, useState } from "react";
@@ -64,7 +65,7 @@ export function useChat(chatId?: string) {
 
         // Add message to Firestore subcollection
         const msgRef = collection(db, "chats", chatId, "messages");
-        await addDoc(msgRef, { 
+        await addDoc(msgRef, {
             text,
             senderId: currentUser.uid,
             createdAt: serverTimestamp(),
@@ -84,18 +85,13 @@ export function useChat(chatId?: string) {
                     : chatData?.clientID;
 
             if (otherUserId) {
-                // Fetch other user info to get FCM token
-                const otherUserSnap = await getDocs(
-                    query(collection(db, "users"), orderBy("uid"))
-                );
+                // Fetch other user info to get FCM token 
+                const clientRef = doc(db, "users", otherUserId);
+                const clientSnap = await getDoc(clientRef);
+                const fcmToken = clientSnap?.data()?.fcmToken;
+                const fullname = clientSnap?.data()?.fullname || "New Message";
 
-                const userDoc = otherUserSnap.docs.find(
-                    (doc) => (doc.data() as any).uid === otherUserId
-                );
-
-                const fcmToken = userDoc?.data()?.fcmToken;
-                const fullname = userDoc?.data()?.fullname || "New Message";
-
+                console.log(fcmToken);
                 if (fcmToken) {
                     await sendPush(fcmToken, fullname, text);
                 }

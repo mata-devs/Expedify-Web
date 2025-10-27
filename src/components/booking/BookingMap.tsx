@@ -1,15 +1,16 @@
 import React, { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import type { Booking } from "../../utils/type";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
-const BookingMap: React.FC<{ selectedBooking: any }> = ({ selectedBooking }) => {
+const BookingMap: React.FC<{ selectedBooking: Booking | null }> = ({ selectedBooking }) => {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainer = useRef<HTMLDivElement | null>(null);
-  const markerRef = useRef<mapboxgl.Marker | null>(null); // 👈 Track the current marker
+  const markerRef = useRef<mapboxgl.Marker[]>([]); // ✅ Always an array (no null)
 
-  // Initialize map once
+  // Initialize the map once
   useEffect(() => {
     if (mapContainer.current && !mapRef.current) {
       mapRef.current = new mapboxgl.Map({
@@ -21,36 +22,39 @@ const BookingMap: React.FC<{ selectedBooking: any }> = ({ selectedBooking }) => 
     }
   }, []);
 
-  // Update marker on booking change
+  // Update markers when booking changes
   useEffect(() => {
+
+    if(!selectedBooking){
+
+      markerRef.current.forEach((marker) => marker.remove());
+      markerRef.current = [];
+    }
     if (!selectedBooking?.location || !mapRef.current) return;
 
-    const { latitude, longitude } = selectedBooking.location;
+    // 🧹 Remove all existing markers
 
-    // 🧹 Remove previous marker if exists
-    if (markerRef.current) {
-      markerRef.current.remove();
-      markerRef.current = null;
-    }
+    // 🗺️ Add markers for the new booking
+    selectedBooking.location.forEach((point) => {
+      const { latitude, longitude } = point.location;
 
-    // 🗺️ Smooth fly to new location
-    mapRef.current.flyTo({
-      center: [longitude, latitude],
-      zoom: 14,
-      speed: 1.2,
-      curve: 1.5,
-      essential: true,
+      // Fly to first location only 
+      mapRef.current?.flyTo({
+        center: [longitude, latitude],
+        zoom: 14,
+        speed: 1.2,
+        curve: 1.5,
+        essential: true,
+      });
+      const newMarker = new mapboxgl.Marker({ color: "#FBBF24" })
+        .setLngLat([longitude, latitude])
+        .addTo(mapRef.current!);
+
+      markerRef.current.push(newMarker);
     });
-
-    // 📍 Add new marker and save reference
-    const newMarker = new mapboxgl.Marker({ color: "#FBBF24" })
-      .setLngLat([longitude, latitude])
-      .addTo(mapRef.current);
-
-    markerRef.current = newMarker;
   }, [selectedBooking]);
 
-  return <div ref={mapContainer} className="flex-1  " />;
+  return <div ref={mapContainer} className="flex-1" />;
 };
 
 export default BookingMap;
