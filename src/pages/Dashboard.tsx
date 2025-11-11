@@ -16,6 +16,7 @@ import MenuLayout from "../components/menu/MenuLayout";
 import useUserCalls from "../hooks/useUserCalls";
 import ChatCallOverlay from "../components/chats/ChatCallOverlay";
 import { acceptCall } from "../utils/acceptCall";
+import RequestLayout from "../components/request/RequestLayout";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -383,6 +384,13 @@ const Dashboard: React.FC = () => {
                     <MenuLayout>
 
                     </MenuLayout>
+                </div>
+                <div
+                    className={`absolute inset-0 bg-white transition-opacity duration-300 z-20 ${currentTab === "Requests" ? "opacity-100 visible" : "opacity-0 invisible"
+                        }`}
+                >
+                    <RequestLayout> 
+                    </RequestLayout>
                 </div>
 
                 {showCall && (

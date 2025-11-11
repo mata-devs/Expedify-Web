@@ -20,6 +20,7 @@ import useRealtimeLocation from "./services/useRealtimeLocation";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RedirectedRoute from "./components/RedirectedRoute";
 import useUserCalls from "./hooks/useUserCalls";
+import JoinAsCreatorPage from "./pages/join-as-creator/page";
 export const radius: number = 4000;
 const App: React.FC = () => {
   const {
@@ -52,7 +53,7 @@ const App: React.FC = () => {
           const snap = await getDoc(ref);
           setHasProfile(snap.exists());
           if (snap.exists()) {
-            setUserData(snap.data() as UserData);
+            setUserData({ ...snap.data(), id: snap.id } as UserData);
           }
         } catch (err) {
           console.error("Error fetching user profile:", err);
@@ -143,7 +144,7 @@ const App: React.FC = () => {
           </RedirectedRoute>
         } />
 
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<JoinAsCreatorPage />} />
         <Route path="/signin" element={
           <RedirectedRoute>
             <SignIn />

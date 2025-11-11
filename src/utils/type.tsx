@@ -12,13 +12,14 @@ export type Place = {
 export type PhotographerLevel = "entry" | "medium" | "pro";
 export type Gender = "Male" | "Female" | "Prefer not to say" | "Undefined" | "";
 export type UserType = "Client" | "Photographer" | "Manager" | "";
+
 export type UserData = {
-  uid: string;
+  id: string;
   fullname: string;
   email: string;
   phoneNumber: string;
   gender: Gender;
-  bday: Date;
+  bday: Timestamp;
   socketID?: string;
   fcmToken?: string;
   userType: UserType;
@@ -41,6 +42,9 @@ export type Photographer = {
   reviews: ReviewsType[];
   priceMin: number;
   priceMax: number;
+  applicationDate?: Timestamp;
+  approvedDate?: Timestamp;
+  reviewDate?:Timestamp;
 };
 export type ReviewsType = {
   id: string;

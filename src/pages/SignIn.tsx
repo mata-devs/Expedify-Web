@@ -3,6 +3,7 @@ import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, googleProvider } from "../firebase";
 import AuthLayout from "../components/AuthLayout";
+import { signInWithGoogle } from "../utils/GoogleSignin";
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ const SignIn: React.FC = () => {
 
   const handleGoogle = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      signInWithGoogle();
       navigate("/dashboard");
     } catch (err: any) {
       setError(err.message);
