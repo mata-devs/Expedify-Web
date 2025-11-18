@@ -59,7 +59,7 @@ const BookingList: React.FC<Props> = ({ bookings, selectedBooking, setSelectedBo
               })} ${to12HourFormat(b.startTime)} - ${to12HourFormat(b.endTime)}` : ""}
             </p>
             <p className="text-yellow-600 font-semibold text-sm">
-              ₱{b.price?.toLocaleString()}
+              ₱{b.price?.toFixed(2)}
             </p>
           </div>
         </div>

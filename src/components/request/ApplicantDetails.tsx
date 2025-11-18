@@ -11,18 +11,24 @@ export default function ApplicantDetails({ user }: { user: UserData }) {
 
       <div>
         <label>Short Bio Description</label>
-        <div style={styles.box}>{portfolio.reviews?.[0]?.comment ?? "No bio"}</div>
+        <div style={styles.box}>{portfolio.bio ?? "No bio"}</div>
       </div>
 
       <div>
         <label>Photography Expertise</label>
         <div style={styles.tagContainer}>
-          {portfolio.level?.map((lvl) => (
+          {portfolio.expertise?.map((lvl) => (
             <span key={lvl} style={styles.tag}>{lvl}</span>
           ))}
         </div>
       </div>
-
+      <div>
+        <label>
+          Equipment Details</label>
+        <div style={styles.box}>
+          {portfolio.equipments||"No Equipmentsc"}
+        </div>
+      </div>
       <div>
         <label>Price Range</label>
         <div style={styles.box}>

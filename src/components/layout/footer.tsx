@@ -10,7 +10,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-[#B56600] text-white z-40 px-4 py-3">
+    <footer className="bg-[#000000] text-white z-40 px-4 py-3">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center text-center md:text-left">
 
         {/* Left */}
@@ -22,7 +22,7 @@ export default function Footer() {
         </a>
 
         {/* Center */}
-        <p className="opacity-90 text-center">© Expedify 2025</p>
+        <p className="opacity-90 text-center font-bold">© Expedify 2025</p>
 
         {/* Right (Icons) */}
         <div className="flex justify-center md:justify-end gap-4">

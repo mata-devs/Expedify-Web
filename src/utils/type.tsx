@@ -31,20 +31,25 @@ export type UserData = {
   distanceKm?: number;
   bgphoto?: string;
   rushBookID: string | null;
+  address: string;
 };
 
 export type Photographer = {
+  id?: string;
   level: PhotographerLevel[];
   images: {
-    isHiglighted: boolean;
+    isHighlighted: boolean;
     url: string
   }[];
-  reviews: ReviewsType[];
+  equipments:string;
+  reviews?: ReviewsType[];
   priceMin: number;
   priceMax: number;
   applicationDate?: Timestamp;
   approvedDate?: Timestamp;
-  reviewDate?:Timestamp;
+  reviewDate?: Timestamp;
+  bio?: string;
+  expertise: string[];
 };
 export type ReviewsType = {
   id: string;
@@ -77,19 +82,19 @@ export interface GeoHashData {
   geohash: string;
   geopoint: GeoPoint;
 }
-export interface ChatType{
-  id?:string;
-  clientID:string;
-  photographerID:string;
-  messages:MessageType[];
-  Photographer?:UserData;
-  Client?:UserData;
+export interface ChatType {
+  id?: string;
+  clientID: string;
+  photographerID: string;
+  messages: MessageType[];
+  Photographer?: UserData;
+  Client?: UserData;
 }
-export interface MessageType{
-  id?:string;
-  createdAt:Timestamp;
-  senderId:string;
-  text:string;
+export interface MessageType {
+  id?: string;
+  createdAt: Timestamp;
+  senderId: string;
+  text: string;
 }
 export type BookingType = "Schedule" | "Rush";
 export type BookingStatus = "pending" | "accepted" | "active" | "declined" | "cancel" | "complete";
@@ -110,12 +115,12 @@ export type Booking = {
   level?: LevelType;
   rate?: number;
   distanceKm: number;
-  location?: {location:GeoPoint; geohash:string}[];
+  location?: { location: GeoPoint; geohash: string }[];
   images?: ImagesPhotos;
-  tier:PhotographerLevel;
+  tier: PhotographerLevel;
   endTime: string | null;
   startTime: string | null;
-  dateSeen:Date;
+  dateSeen: Date;
 };
 
 export const Levels = [

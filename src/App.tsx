@@ -21,6 +21,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import RedirectedRoute from "./components/RedirectedRoute";
 import useUserCalls from "./hooks/useUserCalls";
 import JoinAsCreatorPage from "./pages/join-as-creator/page";
+import CreatorApplication from "./pages/application/page";
 export const radius: number = 4000;
 const App: React.FC = () => {
   const {
@@ -145,6 +146,7 @@ const App: React.FC = () => {
         } />
 
         <Route path="/" element={<JoinAsCreatorPage />} />
+        <Route path="/application" element={<CreatorApplication />} />
         <Route path="/signin" element={
           <RedirectedRoute>
             <SignIn />

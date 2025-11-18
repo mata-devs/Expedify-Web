@@ -55,7 +55,7 @@ export default function RequestLayout() {
 
             {/* LEFT COLUMN */}
             <div className="flex-1 bg-[#FAF6EC] overflow-y-scroll">
-                <ApplicantList applicants={applicants} onSelect={setSelectedUser} />
+                <ApplicantList applicants={applicants} onSelect={setSelectedUser} selectedUser={selectedUser}/>
             </div>
 
             {/* MIDDLE COLUMN */}

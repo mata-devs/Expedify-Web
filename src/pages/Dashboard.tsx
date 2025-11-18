@@ -124,7 +124,7 @@ const Dashboard: React.FC = () => {
                 type: "Feature",
                 geometry: data.routes[0].geometry,
                 properties: {},
-            };
+            } as any;
 
             if (map.getSource("route")) {
                 (map.getSource("route") as mapboxgl.GeoJSONSource).setData(route);
@@ -262,7 +262,7 @@ const Dashboard: React.FC = () => {
                         {userData?.userType == "Manager" &&
                             <button
                                 onClick={() => setCurrentTabs("Requests")}
-                                className={`flex items-center gap-3 border border-white/60 rounded-lg py-2 px-4 hover:bg-white/10 ${currentTab == "menu" && "bg-white"
+                                className={`flex items-center gap-3 border border-white/60 rounded-lg py-2 px-4 hover:bg-white/10 ${currentTab == "Requests" && "bg-white"
                                     }`}
                             >
                                 <span>☰</span> Requests
