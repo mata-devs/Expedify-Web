@@ -16,12 +16,7 @@ export default function CreatorApplication() {
 
   const params = new URLSearchParams(location.search);
   const uuid = params.get("id");
-  const userId = params.get("user");
-
-  console.log("UUID:", uuid);
-  console.log("User ID:", userId);
-
-
+  const userId = params.get("user"); 
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
