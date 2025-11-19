@@ -13,4 +13,10 @@ export default defineConfig({
   optimizeDeps: {
     include: ["mapbox-gl"],
   },
+  server: {
+    headers: {
+      "Cross-Origin-Opener-Policy": "unsafe-none",
+      "Cross-Origin-Embedder-Policy": "unsafe-none"
+    }
+  }
 })

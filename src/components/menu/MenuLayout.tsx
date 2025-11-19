@@ -80,7 +80,7 @@ export default function MenuLayout() {
                             <div className="flex space-x-4 ">
 
                                 {Levels.map((lvl) => {
-                                    const isHave = userData?.portfolio?.level.find((ulv) => ulv == lvl.level);
+                                    const isHave = userData?.portfolio?.level?.find((ulv) => ulv == lvl.level);
                                     return isHave && (<img src={lvl.Image} className="h-10"></img>)
                                 })}
                             </div>
@@ -98,7 +98,7 @@ export default function MenuLayout() {
                 <div className="flex flex-1 flex-col">
                     <button className="bg-[#EDB03B] p-3 rounded-full text-white text-xl">Add Photo</button>
                     <div className="grid grid-cols-3 py-5">
-                        {userData?.portfolio?.images.map((img) =>
+                        {userData?.portfolio?.images?.map((img) =>
                             <img src={img.url}></img>
                         )}
                     </div>

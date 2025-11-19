@@ -7,9 +7,10 @@ export const logout = async (): Promise<void> => {
     await signOut(auth);
 
     // 🧠 Clear Zustand user state
-    const { setUser, setHasProfile, setLoading } = useExpedifyStore.getState();
+    const { setUser, setUserData, setHasProfile, setLoading } = useExpedifyStore.getState();
     setUser(null);
     setHasProfile(null);
+    setUserData(null);
     setLoading(false);
 
     // 🧹 Optionally clear onboarding/permissions 

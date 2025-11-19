@@ -1,30 +1,70 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { Link, useNavigate } from "react-router-dom";
-import { auth, googleProvider } from "../firebase";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { auth, db, googleProvider } from "../firebase";
 import AuthLayout from "../components/AuthLayout";
 import { signInWithGoogle } from "../utils/GoogleSignin";
+import { useExpedifyStore } from "../utils/useExpedifyStore";
+import { doc, getDoc } from "firebase/firestore";
+import type { UserData } from "../utils/type";
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
+  const { setUser, setUserData } = useExpedifyStore();
   const handleSubmit = async (e: React.FormEvent) => {
+    const from = location.state?.from || "/dashboard";
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, pw);
-      navigate("/dashboard");
+      const result = await signInWithEmailAndPassword(auth, email, pw);
+
+      const authUser = result.user;
+
+      // 2️⃣ Save Firebase Auth user
+      setUser(authUser);
+
+      // 3️⃣ Fetch Firestore profile
+      const userRef = doc(db, "users", authUser.uid);
+      const snap = await getDoc(userRef);
+
+      if (snap.exists()) {
+        setUserData(snap.data() as UserData);
+      } else {
+        setUserData(null);
+      }
+      navigate(from, { replace: true }); // 🟢 go back to original path 
     } catch (err: any) {
       setError(err.message);
     }
   };
 
   const handleGoogle = async () => {
+    console.log(location.state);
+    const from = location.state?.from || "/dashboard";
     try {
-      signInWithGoogle();
-      navigate("/dashboard");
+      const result = await signInWithGoogle(); // 🟢 wait for google login
+      if (result) {
+
+        const authUser = result.user;
+
+        // 2️⃣ Save Firebase Auth user
+        setUser(authUser);
+
+        // 3️⃣ Fetch Firestore profile
+        const userRef = doc(db, "users", authUser.uid);
+        const snap = await getDoc(userRef);
+
+        if (snap.exists()) {
+          setUserData(snap.data() as UserData);
+        } else {
+          setUserData(null);
+        }
+        navigate(from, { replace: true }); // 🟢 go back to original path
+      }
     } catch (err: any) {
       setError(err.message);
     }
