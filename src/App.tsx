@@ -148,7 +148,7 @@ const App: React.FC = () => {
         } />
 
         <Route path="/" element={<JoinAsCreatorPage />} />
-        <Route path="/application" element={<CreatorApplication />} />
+        <Route path="/application" element={<ProtectedRoute><CreatorApplication /></ProtectedRoute>} />
         <Route path="/signin" element={
           <RedirectedRoute>
             <SignIn />
