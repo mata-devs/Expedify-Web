@@ -122,6 +122,8 @@ const App: React.FC = () => {
     if (!("Notification" in window)) return "denied"; // Not supported 
     return Notification.permission; // "granted" | "denied" | "default"
   };
+  console.log(import.meta.env.VITE_FIREBASE_API_KEY)
+
   useEffect(() => {
     // Check location permission
     (async () => {
