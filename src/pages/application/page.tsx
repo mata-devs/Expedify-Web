@@ -8,45 +8,47 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useEffect, useState } from "react";
 import type { UserData } from "../../utils/type";
+import { useExpedifyStore } from "../../utils/useExpedifyStore";
+import { logout } from "../../utils/logout";
 
 export default function CreatorApplication() {
 
 
   const location = useLocation();
-
+  const { userData, setUserData, setUser, user } = useExpedifyStore();
   const params = new URLSearchParams(location.search);
   const uuid = params.get("id");
-  const userId = params.get("user"); 
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const userId = params.get("user");
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!userId) return;
+  // useEffect(() => {
+  //   if (!userId) return;
 
-    const fetchUser = async () => {
-      const ref = doc(db, "users", userId);
-      const snap = await getDoc(ref);
+  //   const fetchUser = async () => {
+  //     const ref = doc(db, "users", userId);
+  //     const snap = await getDoc(ref);
 
-      if (snap.exists()) {
-        setUserData({ ...snap.data(), id: snap.id } as UserData);
-        setIsLoaded(true);
-      } else {
-        console.log("User not found");
-        setIsLoaded(true);
-      }
-    };
+  //     if (snap.exists()) {
+  //       setUserData({ ...snap.data(), id: snap.id } as UserData);
+  //       setIsLoaded(true);
+  //     } else {
+  //       console.log("User not found");
+  //       setIsLoaded(true);
+  //     }
+  //   };
 
-    fetchUser();
-  }, [userId]);
+  //   fetchUser();
+  // }, [userId]);
 
-  useEffect(() => {
-    if (userData)
-      if (userData?.portfolio?.id != uuid) {
-        setUserData(null);
-
-      }
-  }, [userData, uuid]);
-  return userData && isLoaded ? (
+  // useEffect(() => {
+  //   if (userData && user)
+  //     if (userData?.portfolio?.id != uuid) {
+  //       setUserData(null);
+  //       setUser(null);
+  //       logout();
+  //     }
+  // }, [userData, uuid]);
+  return userData ? (
     <main className="w-full min-h-screen flex flex-col">
       <Header></Header>
       {/* Hero */}
@@ -61,17 +63,21 @@ export default function CreatorApplication() {
       </section>
 
       {/* Form */}
-      {userData.portfolio?.approvedDate ? 
+      {userData.portfolio?.id != uuid ?
+
         <div className="flex flex-1 flex-col items-center py-15 my-15">
-          <h2 className="p-5 text-5xl">Application Approved</h2>
-          <h3 className="p-5 text-4xl">You have now photographer access </h3>
-        </div> : userData.portfolio?.applicationDate ?
-        <div className="flex flex-1 flex-col items-center py-15 my-15">
-          <h2 className="p-5 text-5xl">Application Submitted</h2>
-          <h3 className="p-5 text-4xl">Waiting For Approval</h3>
+          <h2 className="p-5 text-5xl">Invalid Application URL</h2>
+          <h3 className="p-5 text-4xl">Your Application URL may expired or invalid</h3>
         </div>
         :
-        <CreatorApplicationForm userData={userData} />}
+        userData.portfolio?.approvedDate ?
+          <div className="flex flex-1 flex-col items-center py-15 my-15">
+            <h2 className="p-5 text-5xl">Application Approved</h2>
+            <h3 className="p-5 text-4xl">You have now photographer access </h3>
+          </div>
+            :
+            < CreatorApplicationForm userData={userData} />
+      }
       <Footer></Footer>
     </main>
   ) : isLoaded && (

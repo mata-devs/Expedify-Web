@@ -9,13 +9,16 @@ type Props = {
 };
 
 export default function ApplicantList({ applicants, onSelect, selectedUser }: Props) {
+  const filterapplicants = applicants.sort();
   return (
     <div>
       <h2 style={{ padding: "16px", fontWeight: "bold" }}>Applications</h2>
+      <div className="flex flex-col">
 
-      {applicants.map((user) => (
-        <ApplicantCard key={user.id} user={user} onSelect={() => onSelect(user)} selectedUser={selectedUser} />
-      ))}
+        {filterapplicants.map((user) => (
+          <ApplicantCard key={user.id} user={user} onSelect={() => onSelect(user)} selectedUser={selectedUser} />
+        ))}
+      </div>
     </div>
   );
 }

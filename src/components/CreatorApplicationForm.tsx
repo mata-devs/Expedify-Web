@@ -1,7 +1,7 @@
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
-import type { Photographer, PhotographerLevel, UserData } from "../utils/type";
+import { Levels, type Photographer, type PhotographerLevel, type UserData } from "../utils/type";
 import { db } from "../firebase";
 import PhotoUploadFive from "./PhotoUploadFive";
 import { uploadImageWithProgress } from "../utils/uploadWithProgress";
@@ -24,32 +24,51 @@ export const PhotographyExpertise = [
   "Architectural & Real Estate",
   "Specialized & Technical"
 ];
+export const TierLevel = [
+  "entry",
+  "medium",
+  "pro"
+] as PhotographerLevel[];
 
 export default function CreatorApplicationForm({ userData }: { userData: UserData }) {
   const [name, setName] = useState(userData.fullname);
-  const [location, setLocation] = useState("");
-  const [about, setAbout] = useState("");
-  const [levels, setLevels] = useState<string[]>([]);
+  const [location, setLocation] = useState(userData.address);
+  const [about, setAbout] = useState(userData.portfolio?.bio);
+  const [levels, setLevels] = useState<string[]>(userData.portfolio?.expertise || []);
+  const [tiers, setTiers] = useState<PhotographerLevel[]>(userData.portfolio?.level || []);
   const [priceRangeSelected, setPriceRangeSelected] = useState<PriceRnageType | null>(null);
-  const [linkPortfolio, setLinkPortfolio] = useState("");
-
+  const [linkPortfolio, setLinkPortfolio] = useState(userData.portfolio?.linkPortfolio);
+  useEffect(() => {
+    if (userData.portfolio?.priceMin)
+      setPriceRangeSelected(priceRange.find((p) => p.min == userData.portfolio?.priceMin && p.max == userData.portfolio?.priceMax) || null);
+  }, [userData])
   // Profile image preview + file + progress
   const [image, setImage] = useState<string | null>(null);
-  const [equiptments, setEquiptments] = useState<string>("");
+  const [equiptments, setEquiptments] = useState<string>(userData.portfolio?.equipments || "");
   const [profileFile, setProfileFile] = useState<File | null>(null);
   const [profileProgress, setProfileProgress] = useState(0);
 
   // Portfolio images preview, files, progress bars
   const [images5, setImages5] = useState<(string | null)[]>(Array(5).fill(null));
+
   const [files5, setFiles5] = useState<(File | null)[]>(Array(5).fill(null));
   const [progress5, setProgress5] = useState<number[]>(Array(5).fill(0));
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [result, setResult] = useState<{ type: "error" | "success"; message: string } | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    if (!userData?.portfolio?.images) return;
+
+    setImages5(userData.portfolio.images.map((img) => img.url));
+  }, [userData]);
 
   // Toggle functions
   const toggleLevel = (lvl: string) => {
     setLevels(prev => (prev.includes(lvl) ? prev.filter(l => l !== lvl) : [...prev, lvl]));
+  };
+  const toggleTier = (lvl: PhotographerLevel) => {
+    setTiers(prev => (prev.includes(lvl) ? prev.filter(l => l !== lvl) : [...prev, lvl]));
   };
 
   const togglePriceRange = (lvl: PriceRnageType) => {
@@ -118,7 +137,6 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
         const file = files5[i];
 
         if (!file) {
-          uploadedPortfolio.push({ isHighlighted: true, url: null });
           continue;
         }
 
@@ -135,46 +153,62 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
 
         uploadedPortfolio.push({ isHighlighted: true, url });
       }
-
+      console.log("uploadedPortfolio", uploadedPortfolio.length);
       // -------------------------
       // Save to Firestore
       // -------------------------
       await updateDoc(doc(db, "users", userData.id), {
         portfolio: {
+          id: userData.portfolio?.id,
           applicationDate: serverTimestamp(),
-          level: [] as PhotographerLevel[],
+          declinedDate: null,
+          level: tiers as PhotographerLevel[],
           priceMin: priceRangeSelected.min,
           priceMax: priceRangeSelected.max,
           expertise: levels,
           bio: about,
-          images: uploadedPortfolio,
-          equipments: equiptments
+          images: uploadedPortfolio.length > 0 ? uploadedPortfolio : userData.portfolio?.images,
+          equipments: equiptments,
+          linkPortfolio: linkPortfolio
         } as Photographer,
         address: location,
-        photoURL: uploadedProfileURL
+        photoURL: uploadedProfileURL || userData.photoURL,
       } as UserData);
-
-      alert("Application submitted!");
+      setResult({ type: "success", message: "Application Sent Successfuly" });
+      setIsSubmitting(false);
     } catch (err) {
       console.error(err);
-      alert("Upload failed.");
+      setResult({ type: "error", message: "Application Error:" + err });
+      setIsSubmitting(false);
     }
 
-    setIsSubmitting(false);
   };
+
+  useEffect(() => {
+    if (!result) return;
+
+    const timeout = setTimeout(() => {
+      setResult(null);
+    }, 2000);
+
+    return () => clearTimeout(timeout);  // IMPORTANT
+  }, [result]);
 
   // -----------------------------
   //  UI
   // -----------------------------
   return (
     <form className="flex flex-1 flex-row w-[80%] mx-auto" onSubmit={handleSubmit}>
+      {result && <div className={`${result?.type == "error" ? " bg-red-800" : " bg-green-700"} p-3 fixed bottom-20 right-5 z-50 text-white font-bold rounded-xl animate-bounce`}>
+        Message:{result?.message}
+      </div>}
       {/* Profile Image */}
-      {image ? (
+      {image || userData.photoURL ? (
         <div className="relative">
           <img
             onClick={openFileDialog}
-            src={image}
-            className="w-50 h-50 mt-20 rounded-full cursor-pointer"
+            src={image || userData.photoURL}
+            className={`w-50 h-50 mt-20 rounded-full ${(isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)) ? " cursor-not-allowed" : "cursor-pointer"} `}
           />
 
           {profileProgress > 0 && profileProgress < 100 && (
@@ -199,6 +233,7 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
         type="file"
         accept="image/*"
         className="hidden"
+        disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
         onChange={handleFileChange}
       />
 
@@ -206,16 +241,23 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
       <div className="w-full max-w-2xl mx-auto p-6 bg-white rounded-lg">
         <h2 className="text-2xl font-bold mb-6 text-center">Join As A Creator</h2>
 
+        {userData.portfolio?.declinedDate && <div className="bg-amber-700 p-5 text-white my-5 rounded-xl ">
+          <p>Application Declined</p>
+          <p>Reason:<b className=" capitalize"> {userData.portfolio?.reason}</b></p>
+        </div>}
         <label className="block mb-2 font-semibold">Name</label>
         <input value={name} onChange={(e) => setName(e.target.value)}
+          disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
           className="border rounded-md p-2 w-full mb-4" required />
 
         <label className="block mb-2 font-semibold">Location</label>
         <input value={location} onChange={(e) => setLocation(e.target.value)}
+          disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
           className="border rounded-md p-2 w-full mb-4" required />
 
         <label className="block mb-2 font-semibold">About</label>
         <textarea value={about} onChange={(e) => setAbout(e.target.value)}
+          disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
           className="border rounded-md p-2 w-full mb-4" required />
 
         {/* Expertise */}
@@ -224,11 +266,31 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
           {PhotographyExpertise.map((lvl) => (
             <button key={lvl} type="button"
               onClick={() => toggleLevel(lvl)}
-              className={`px-4 py-2 rounded-full border ${levels.includes(lvl)
+              disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
+              className={`${isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null) ? " cursor-not-allowed" : "cursor-pointer hover:scale-105"} transition-all px-4 py-2 rounded-full border ${levels.includes(lvl)
                 ? "bg-[#FFF4CF]"
                 : "bg-[#FFF4CF] border-transparent"
                 }`}>
               {lvl}
+            </button>
+          ))}
+        </div>
+        {/* Tier */}
+        <label className="block mb-3 font-semibold">Photography Tier</label>
+        <div className="flex flex-wrap gap-2 mb-6">
+          {Levels.map((lvl) => (
+            <button key={lvl.level} type="button"
+              onClick={() => toggleTier(lvl.level)}
+              disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
+              className={`flex flex-col items-center w-50 px-4 aspect-square py-2 capitalize rounded-2xl ${isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null) ? " cursor-not-allowed" : "cursor-pointer hover:scale-105"} transition-all border 
+              ${tiers.includes(lvl.level)
+                  ? "bg-[#FFF4CF]"
+                  : "bg-[#FFF4CF] border-transparent"
+                }`}>
+              <img src={lvl.Image} className=" h-30 "></img>
+              <p className="flex-1 flex items-center justify-center">
+                {lvl.level}
+              </p>
             </button>
           ))}
         </div>
@@ -239,7 +301,8 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
           {priceRange.map((lvl) => (
             <button key={lvl.id} type="button"
               onClick={() => togglePriceRange(lvl)}
-              className={`px-4 py-2 rounded-full border ${priceRangeSelected?.id === lvl.id
+              disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
+              className={`px-4 py-2 rounded-full ${isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null) ? " cursor-not-allowed" : "cursor-pointer hover:scale-105"} transition-all border ${priceRangeSelected?.id === lvl.id
                 ? "bg-[#FFF4CF]"
                 : "bg-[#FFF4CF] border-transparent"
                 }`}>
@@ -251,23 +314,24 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
         <label className="block mb-2 font-semibold">Equipments</label>
         <input type="text" value={equiptments}
           onChange={(e) => setEquiptments(e.target.value)}
+          disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
           className="border rounded-md p-2 w-full mb-4"
         />
         {/* Portfolio */}
         <label className="block mb-2 font-semibold">Upload your 5 best photos</label>
-        <PhotoUploadFive images={images5} setImages={setImages5} setFiles={setFiles5} progress={progress5} />
+        <PhotoUploadFive images={images5} setImages={setImages5} setFiles={setFiles5} progress={progress5} disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)} />
 
         {/* Portfolio Link */}
         <label className="block mb-2 font-semibold">Link to your portfolio (optional)</label>
-        <input type="text" value={linkPortfolio}
+        <input type="text" value={linkPortfolio} disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
           onChange={(e) => setLinkPortfolio(e.target.value)}
           className="border rounded-md p-2 w-full mb-4"
         />
 
         {/* Submit */}
-        <button type="submit" disabled={isSubmitting}
-          className="w-full py-3 bg-yellow-600 text-white rounded-lg hover:opacity-90">
-          {isSubmitting ? "Submitting..." : "Submit"}
+        <button type="submit" disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
+          className={`w-full py-3 ${!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null ? "bg-yellow-600/60 cursor-not-allowed" : "bg-yellow-600 hover:opacity-90"} text-white rounded-lg `}>
+          {isSubmitting ? "Submitting..." : userData.portfolio?.declinedDate ? "Resubmit" : userData.portfolio?.applicationDate ? "Waiting for Approval" : "Submit"}
         </button>
       </div>
     </form>

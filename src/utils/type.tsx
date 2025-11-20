@@ -41,15 +41,20 @@ export type Photographer = {
     isHighlighted: boolean;
     url: string
   }[];
-  equipments:string;
+  equipments: string;
   reviews?: ReviewsType[];
   priceMin: number;
   priceMax: number;
   applicationDate?: Timestamp;
   approvedDate?: Timestamp;
+  declinedDate?: Timestamp | null;
   reviewDate?: Timestamp;
   bio?: string;
   expertise: string[];
+  linkPortfolio: string;
+  reason: string;
+  approvedBy:string;
+  declinedBy:string;
 };
 export type ReviewsType = {
   id: string;

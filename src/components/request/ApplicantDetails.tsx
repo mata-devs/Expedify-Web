@@ -1,5 +1,5 @@
 // src/components/requests/ApplicantDetails.tsx 
-import type { UserData } from "../../utils/type";
+import { Levels, type UserData } from "../../utils/type";
 import ApproveButtons from "./ApproveButtons";
 
 export default function ApplicantDetails({ user }: { user: UserData }) {
@@ -11,28 +11,42 @@ export default function ApplicantDetails({ user }: { user: UserData }) {
 
       <div>
         <label>Short Bio Description</label>
-        <div style={styles.box}>{portfolio.bio ?? "No bio"}</div>
+        <div style={styles.box}>{portfolio.bio ?? "No Bio Provided"}</div>
       </div>
 
       <div>
         <label>Photography Expertise</label>
         <div style={styles.tagContainer}>
-          {portfolio.expertise?.map((lvl) => (
+          {portfolio.expertise ? portfolio.expertise.map((lvl) => (
             <span key={lvl} style={styles.tag}>{lvl}</span>
-          ))}
+          )) : <p>No Expertise Selected</p>}
+        </div>
+      </div>
+      <div>
+        <label>Photography Tier</label>
+        <div style={styles.tagContainer}>
+          {portfolio?.level?.length > 0 ? Levels.map((lvl) => portfolio?.level?.includes(lvl.level) &&
+            <span key={lvl.level} style={styles.tag}>{lvl.level}</span>
+          ) : <p>No Tier Selected</p>}
         </div>
       </div>
       <div>
         <label>
           Equipment Details</label>
         <div style={styles.box}>
-          {portfolio.equipments||"No Equipmentsc"}
+          {portfolio.equipments || "No Equipmentsc"}
         </div>
       </div>
       <div>
         <label>Price Range</label>
         <div style={styles.box}>
           ₱{portfolio.priceMin} - ₱{portfolio.priceMax}
+        </div>
+      </div>
+      <div>
+        <label>Portfolio Link</label>
+        <div style={styles.box}>
+          {portfolio.linkPortfolio?<a href={portfolio.linkPortfolio} className="hover:underline hover:text-blue-500">{portfolio.linkPortfolio}</a>:"No URL Provided"}
         </div>
       </div>
 
@@ -44,9 +58,11 @@ export default function ApplicantDetails({ user }: { user: UserData }) {
           ))}
         </div>
       </div>
-      {!user.portfolio?.approvedDate &&
-        <ApproveButtons user={user} />}
-    </div>
+      {
+        (!user.portfolio?.approvedDate && !user.portfolio?.declinedDate) &&
+        <ApproveButtons user={user} />
+      }
+    </div >
   );
 }
 

@@ -35,7 +35,7 @@ export default function ApplicantCard({
 
             <div className="px-2">
                 <p className={`${user.portfolio?.reviewDate != null ? "" : "font-semibold"}`}>{user.fullname}</p>
-                <p className={`${user.portfolio?.reviewDate != null ? "" : "font-semibold"} text-xs text-[#B08930]`}>{user.portfolio?.approvedDate != null ? "Application Approved" : "Pending Application Sent"}</p>
+                <p className={`${user.portfolio?.reviewDate != null ? "" : "font-semibold"} text-xs text-[#B08930]`}>{user.portfolio?.approvedDate != null ? "Application Approved" :user.portfolio?.declinedDate != null ?"Application Declined": "Pending Application Sent"}</p>
             </div>
         </div>
     );

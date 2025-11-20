@@ -4,12 +4,14 @@ export default function PhotoUploadFive({
     images,
     setImages,
     setFiles,
-    progress
+    progress,
+    disabled
 }: {
     images: (string | null)[];
     setImages: React.Dispatch<React.SetStateAction<(string | null)[]>>;
     setFiles: React.Dispatch<React.SetStateAction<(File | null)[]>>;
     progress: number[];
+    disabled: boolean;
 }) {
     const inputRefs = useRef<HTMLInputElement[]>([]);
 
@@ -42,7 +44,7 @@ export default function PhotoUploadFive({
         <div className="flex gap-4">
             {images.map((img, index) => (
                 <div key={index}
-                    className="relative w-[140px] h-[160px] bg-[#FFF5D9] border-2 border-dashed border-[#C07900] rounded cursor-pointer overflow-hidden flex items-center justify-center"
+                    className={`relative w-[140px] h-[160px] bg-[#FFF5D9] border-2 border-dashed border-[#C07900] rounded ${disabled?" cursor-not-allowed":"cursor-pointer"} overflow-hidden flex items-center justify-center`}
                     onClick={() => handleSelect(index)}
                 >
                     {img ? (
@@ -63,6 +65,7 @@ export default function PhotoUploadFive({
                         className="hidden" ref={(el) => {
                             inputRefs.current[index] = el!;
                         }}
+                        disabled={disabled}
                         onChange={(e) => handleFileChange(e, index)}
                     />
                 </div>
