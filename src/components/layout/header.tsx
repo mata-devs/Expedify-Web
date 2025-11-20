@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import profile from "../../assets/icons/profile.png";
 import logo1 from "../../assets/logo1.png";
 import { useExpedifyStore } from "../../utils/useExpedifyStore";
+import { logout } from "../../utils/logout";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -63,7 +64,7 @@ export default function Header() {
                   Profile
                 </a>
                 <button
-                  onClick={() => alert("Logout clicked")}
+                  onClick={() => logout()}
                   className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                 >
                   Logout

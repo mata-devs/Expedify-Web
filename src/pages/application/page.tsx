@@ -67,7 +67,9 @@ export default function CreatorApplication() {
 
         <div className="flex flex-1 flex-col items-center py-15 my-15">
           <h2 className="p-5 text-5xl">Invalid Application URL</h2>
-          <h3 className="p-5 text-4xl">Your Application URL may expired or invalid</h3>
+          <h3 className="p-5 text-4xl">Your Application URL not matched in current account</h3>
+          <h3 className="p-5 text-4xl">Please Change Your Account To Proceed this Application</h3>
+          <button onClick={logout} className="p-3 bg-white text-red-700  text-3xl cursor-pointer hover:font-bold">Logout?</button>
         </div>
         :
         userData.portfolio?.approvedDate ?
@@ -75,8 +77,8 @@ export default function CreatorApplication() {
             <h2 className="p-5 text-5xl">Application Approved</h2>
             <h3 className="p-5 text-4xl">You have now photographer access </h3>
           </div>
-            :
-            < CreatorApplicationForm userData={userData} />
+          :
+          < CreatorApplicationForm userData={userData} />
       }
       <Footer></Footer>
     </main>
