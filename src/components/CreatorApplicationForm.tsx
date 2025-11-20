@@ -113,7 +113,10 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
     }
     e.preventDefault();
     setIsSubmitting(true);
-
+    if(tiers.length==0){
+      setResult({type:'error',message:"Tier Required"});
+      return;
+    }
     try {
       let uploadedProfileURL: string | null = null;
 
@@ -169,7 +172,7 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
           bio: about,
           images: uploadedPortfolio.length > 0 ? uploadedPortfolio : userData.portfolio?.images,
           equipments: equiptments,
-          linkPortfolio: linkPortfolio
+          linkPortfolio: linkPortfolio||""
         } as Photographer,
         address: location,
         photoURL: uploadedProfileURL || userData.photoURL,
