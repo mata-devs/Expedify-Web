@@ -112,11 +112,12 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
       return;
     }
     e.preventDefault();
-    setIsSubmitting(true);
     if(tiers.length==0){
       setResult({type:'error',message:"Tier Required"});
       return;
     }
+    
+    setIsSubmitting(true);
     try {
       let uploadedProfileURL: string | null = null;
 
