@@ -79,9 +79,9 @@ export default function MenuLayout() {
                             <p className="font-light text-xl capitalize ">{userData?.phoneNumber}</p>
                             <div className="flex space-x-4 ">
 
-                                {Levels.map((lvl) => {
+                                {Levels.map((lvl,index) => {
                                     const isHave = userData?.portfolio?.level?.find((ulv) => ulv == lvl.level);
-                                    return isHave && (<img src={lvl.Image} className="h-10"></img>)
+                                    return isHave && (<img key={index} src={lvl.Image} className="h-10"></img>)
                                 })}
                             </div>
                             <p>{userData?.portfolio?.bio || "Photographers Bio"}</p>
@@ -98,8 +98,8 @@ export default function MenuLayout() {
                 <div className="flex flex-1 flex-col">
                     <button className="bg-[#EDB03B] p-3 rounded-full text-white text-xl">Add Photo</button>
                     <div className="grid grid-cols-3 py-5">
-                        {userData?.portfolio?.images?.map((img) =>
-                            <img src={img.url}></img>
+                        {userData?.portfolio?.images?.map((img,index) =>
+                            <img key={index} src={img.url}></img>
                         )}
                     </div>
                 </div>
@@ -112,17 +112,17 @@ export default function MenuLayout() {
                         <img src={geko3} className=" w-40 h-40" ></img></div>
                     <div className="flex-col px-10 text-[#000000] font-bold ">
                         <h3 className="text-2xl">Settings</h3>
-                        {menuList.map((menu) =>
+                        {menuList.map((menu,index) =>
 
-                            <a href={menu.href} className="grid grid-cols-4 p-1">
+                            <a href={menu.href} key={index} className="grid grid-cols-4 p-1">
                                 <img className=" items-center h-5" src={menu.url}></img>
                                 <p className=" items-center col-span-3">{menu.text}</p>
                             </a>
                         )}
                         <div className="my-5 border-b-2 border-[#D68501]"></div>
-                        {secondarymenuList.map((menu) =>
+                        {secondarymenuList.map((menu,index) =>
 
-                            <a className="grid grid-cols-4 items-center p-1">
+                            <a  key={index} className="grid grid-cols-4 items-center p-1">
                                 <p className=" items-center col-span-3">{menu.text}</p>
                             </a>
                         )}
