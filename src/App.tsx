@@ -22,6 +22,7 @@ import RedirectedRoute from "./components/RedirectedRoute";
 import useUserCalls from "./hooks/useUserCalls";
 import JoinAsCreatorPage from "./pages/join-as-creator/page";
 import CreatorApplication from "./pages/application/page";
+import ConfirmEmail from "./pages/confirm/email/page";
 export const radius: number = 4000;
 const App: React.FC = () => {
   const {
@@ -121,8 +122,7 @@ const App: React.FC = () => {
   const checkNotificationPermission = (): NotificationPermission => {
     if (!("Notification" in window)) return "denied"; // Not supported 
     return Notification.permission; // "granted" | "denied" | "default"
-  };
-  console.log(import.meta.env.VITE_FIREBASE_API_KEY)
+  }; 
 
   useEffect(() => {
     // Check location permission
@@ -148,6 +148,7 @@ const App: React.FC = () => {
         } />
 
         <Route path="/" element={<JoinAsCreatorPage />} />
+        <Route path="/confirm/email" element={<ConfirmEmail />} />
         <Route path="/application" element={<ProtectedRoute><CreatorApplication /></ProtectedRoute>} />
         <Route path="/signin" element={
           <RedirectedRoute>
