@@ -4,10 +4,7 @@ import Header from "../../components/layout/header";
 import LandingPage from "../Landing/LandingPage";
 
 import { useLocation } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../firebase";
-import { useEffect, useState } from "react";
-import type { UserData } from "../../utils/type";
+import { useState } from "react";
 import { useExpedifyStore } from "../../utils/useExpedifyStore";
 import { logout } from "../../utils/logout";
 
@@ -15,11 +12,10 @@ export default function CreatorApplication() {
 
 
   const location = useLocation();
-  const { userData, setUserData, setUser, user } = useExpedifyStore();
+  const { userData } = useExpedifyStore();
   const params = new URLSearchParams(location.search);
   const uuid = params.get("id");
-  const userId = params.get("user");
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [isLoaded] = useState<boolean>(false);
 
   // useEffect(() => {
   //   if (!userId) return;

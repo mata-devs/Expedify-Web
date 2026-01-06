@@ -112,11 +112,11 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
       return;
     }
     e.preventDefault();
-    if(tiers.length==0){
-      setResult({type:'error',message:"Tier Required"});
+    if (tiers.length == 0) {
+      setResult({ type: 'error', message: "Tier Required" });
       return;
     }
-    
+
     setIsSubmitting(true);
     try {
       let uploadedProfileURL: string | null = null;
@@ -173,7 +173,7 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
           bio: about,
           images: uploadedPortfolio.length > 0 ? uploadedPortfolio : userData.portfolio?.images,
           equipments: equiptments,
-          linkPortfolio: linkPortfolio||""
+          linkPortfolio: linkPortfolio || ""
         } as Photographer,
         address: location,
         photoURL: uploadedProfileURL || userData.photoURL,
@@ -201,24 +201,39 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
   // -----------------------------
   //  UI
   // -----------------------------
-  return (
-    <form className="flex flex-1 flex-row w-[80%] mx-auto" onSubmit={handleSubmit}>
-      {result && <div className={`${result?.type == "error" ? " bg-red-800" : " bg-green-700"} p-3 fixed bottom-20 right-5 z-50 text-white font-bold rounded-xl animate-bounce`}>
-        Message:{result?.message}
-      </div>}
-      {/* Profile Image */}
+  return (<form
+    className="flex flex-col md:flex-row w-full max-w-5xl mx-auto px-4 md:px-0 gap-8 py-10"
+    onSubmit={handleSubmit}
+  >
+    {result && (
+      <div
+        className={`${result?.type === "error" ? "bg-red-800" : "bg-green-700"
+          } p-3 fixed bottom-20 right-5 z-50 text-white font-bold rounded-xl animate-bounce`}
+      >
+        Message: {result?.message}
+      </div>
+    )}
+
+    {/* PROFILE IMAGE */}
+    <div className="flex flex-col items-center md:items-start flex-shrink-0">
       {image || userData.photoURL ? (
         <div className="relative">
           <img
             onClick={openFileDialog}
             src={image || userData.photoURL}
-            className={`w-50 h-50 mt-20 rounded-full ${(isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)) ? " cursor-not-allowed" : "cursor-pointer"} `}
+            className={`w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 rounded-full ${isSubmitting ||
+              (!userData.portfolio?.declinedDate &&
+                userData.portfolio?.applicationDate != null)
+              ? "cursor-not-allowed"
+              : "cursor-pointer"
+              }`}
           />
 
           {profileProgress > 0 && profileProgress < 100 && (
-            <div className="absolute bottom-0 left-0 bg-yellow-600 h-2"
-              style={{ width: `${profileProgress}%` }}>
-            </div>
+            <div
+              className="absolute bottom-0 left-0 bg-yellow-600 h-2 rounded"
+              style={{ width: `${profileProgress}%` }}
+            />
           )}
         </div>
       ) : (
@@ -226,118 +241,235 @@ export default function CreatorApplicationForm({ userData }: { userData: UserDat
           onClick={openFileDialog}
           onDrop={handleDrop}
           onDragOver={allowDrop}
-          className="w-50 h-50 mt-20 rounded-full bg-[#FFF4CF] text-center flex items-center justify-center cursor-pointer"
+          className="w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 rounded-full bg-[#FFF4CF] text-center flex items-center justify-center cursor-pointer"
         >
-          <p className="text-[#B56600] text-2xl">Add Photo</p>
+          <p className="text-[#B56600] text-lg sm:text-xl md:text-2xl">Add Photo</p>
         </div>
       )}
-
       <input
         ref={inputRef}
         type="file"
         accept="image/*"
         className="hidden"
-        disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
+        disabled={
+          isSubmitting ||
+          (!userData.portfolio?.declinedDate &&
+            userData.portfolio?.applicationDate != null)
+        }
         onChange={handleFileChange}
       />
+    </div>
 
-      {/* FORM CONTENT */}
-      <div className="w-full max-w-2xl mx-auto p-6 bg-white rounded-lg">
-        <h2 className="text-2xl font-bold mb-6 text-center">Join As A Creator</h2>
+    {/* FORM CONTENT */}
+    <div className="flex-1 w-full bg-white rounded-lg p-6 shadow-md">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center md:text-left">
+        Join As A Creator
+      </h2>
 
-        {userData.portfolio?.declinedDate && <div className="bg-amber-700 p-5 text-white my-5 rounded-xl ">
+      {userData.portfolio?.declinedDate && (
+        <div className="bg-amber-700 p-5 text-white my-5 rounded-xl">
           <p>Application Declined</p>
-          <p>Reason:<b className=" capitalize"> {userData.portfolio?.reason}</b></p>
-        </div>}
-        <label className="block mb-2 font-semibold">Name</label>
-        <input value={name} onChange={(e) => setName(e.target.value)}
-          disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
-          className="border rounded-md p-2 w-full mb-4" required />
+          <p>
+            Reason: <b className="capitalize">{userData.portfolio?.reason}</b>
+          </p>
+        </div>
+      )}
 
-        <label className="block mb-2 font-semibold">Location</label>
-        <input value={location} onChange={(e) => setLocation(e.target.value)}
-          disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
-          className="border rounded-md p-2 w-full mb-4" required />
+      {/* Name */}
+      <label className="block mb-2 font-semibold">Name</label>
+      <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        disabled={
+          isSubmitting ||
+          (!userData.portfolio?.declinedDate &&
+            userData.portfolio?.applicationDate != null)
+        }
+        className="border rounded-md p-2 w-full mb-4"
+        required
+      />
 
-        <label className="block mb-2 font-semibold">About</label>
-        <textarea value={about} onChange={(e) => setAbout(e.target.value)}
-          disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
-          className="border rounded-md p-2 w-full mb-4" required />
+      {/* Location */}
+      <label className="block mb-2 font-semibold">Location</label>
+      <input
+        value={location}
+        onChange={(e) => setLocation(e.target.value)}
+        disabled={
+          isSubmitting ||
+          (!userData.portfolio?.declinedDate &&
+            userData.portfolio?.applicationDate != null)
+        }
+        className="border rounded-md p-2 w-full mb-4"
+        required
+      />
 
-        {/* Expertise */}
-        <label className="block mb-3 font-semibold">Photography Expertise</label>
-        <div className="flex flex-wrap gap-2 mb-6">
-          {PhotographyExpertise.map((lvl) => (
-            <button key={lvl} type="button"
-              onClick={() => toggleLevel(lvl)}
-              disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
-              className={`${isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null) ? " cursor-not-allowed" : "cursor-pointer hover:scale-105"} transition-all px-4 py-2 rounded-full border ${levels.includes(lvl)
+      {/* About */}
+      <label className="block mb-2 font-semibold">About</label>
+      <textarea
+        value={about}
+        onChange={(e) => setAbout(e.target.value)}
+        disabled={
+          isSubmitting ||
+          (!userData.portfolio?.declinedDate &&
+            userData.portfolio?.applicationDate != null)
+        }
+        className="border rounded-md p-2 w-full mb-4"
+        required
+      />
+
+      {/* Expertise */}
+      <label className="block mb-3 font-semibold">Photography Expertise</label>
+      <div className="flex flex-wrap gap-2 mb-6">
+        {PhotographyExpertise.map((lvl) => (
+          <button
+            key={lvl}
+            type="button"
+            onClick={() => toggleLevel(lvl)}
+            disabled={
+              isSubmitting ||
+              (!userData.portfolio?.declinedDate &&
+                userData.portfolio?.applicationDate != null)
+            }
+            className={`${isSubmitting ||
+              (!userData.portfolio?.declinedDate &&
+                userData.portfolio?.applicationDate != null)
+              ? "cursor-not-allowed"
+              : "cursor-pointer hover:scale-105"
+              } transition-all px-4 py-2 rounded-full border ${levels.includes(lvl)
                 ? "bg-[#FFF4CF]"
                 : "bg-[#FFF4CF] border-transparent"
-                }`}>
-              {lvl}
-            </button>
-          ))}
-        </div>
-        {/* Tier */}
-        <label className="block mb-3 font-semibold">Photography Tier</label>
-        <div className="flex flex-wrap gap-2 mb-6">
-          {Levels.map((lvl) => (
-            <button key={lvl.level} type="button"
-              onClick={() => toggleTier(lvl.level)}
-              disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
-              className={`flex flex-col items-center w-50 px-4 aspect-square py-2 capitalize rounded-2xl ${isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null) ? " cursor-not-allowed" : "cursor-pointer hover:scale-105"} transition-all border 
-              ${tiers.includes(lvl.level)
-                  ? "bg-[#FFF4CF]"
-                  : "bg-[#FFF4CF] border-transparent"
-                }`}>
-              <img src={lvl.Image} className=" h-30 "></img>
-              <p className="flex-1 flex items-center justify-center">
-                {lvl.level}
-              </p>
-            </button>
-          ))}
-        </div>
-
-        {/* Price Range */}
-        <label className="block mb-3 font-semibold">Select your Price Range</label>
-        <div className="flex flex-wrap gap-2 mb-6">
-          {priceRange.map((lvl) => (
-            <button key={lvl.id} type="button"
-              onClick={() => togglePriceRange(lvl)}
-              disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
-              className={`px-4 py-2 rounded-full ${isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null) ? " cursor-not-allowed" : "cursor-pointer hover:scale-105"} transition-all border ${priceRangeSelected?.id === lvl.id
-                ? "bg-[#FFF4CF]"
-                : "bg-[#FFF4CF] border-transparent"
-                }`}>
-              ₱{lvl.min}-₱{lvl.max}
-            </button>
-          ))}
-        </div>
-
-        <label className="block mb-2 font-semibold">Equipments</label>
-        <input type="text" value={equiptments}
-          onChange={(e) => setEquiptments(e.target.value)}
-          disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
-          className="border rounded-md p-2 w-full mb-4"
-        />
-        {/* Portfolio */}
-        <label className="block mb-2 font-semibold">Upload your 5 best photos</label>
-        <PhotoUploadFive images={images5} setImages={setImages5} setFiles={setFiles5} progress={progress5} disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)} />
-
-        {/* Portfolio Link */}
-        <label className="block mb-2 font-semibold">Link to your portfolio (optional)</label>
-        <input type="text" value={linkPortfolio} disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
-          onChange={(e) => setLinkPortfolio(e.target.value)}
-          className="border rounded-md p-2 w-full mb-4"
-        />
-
-        {/* Submit */}
-        <button type="submit" disabled={isSubmitting || (!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null)}
-          className={`w-full py-3 ${!userData.portfolio?.declinedDate && userData.portfolio?.applicationDate != null ? "bg-yellow-600/60 cursor-not-allowed" : "bg-yellow-600 hover:opacity-90"} text-white rounded-lg `}>
-          {isSubmitting ? "Submitting..." : userData.portfolio?.declinedDate ? "Resubmit" : userData.portfolio?.applicationDate ? "Waiting for Approval" : "Submit"}
-        </button>
+              }`}
+          >
+            {lvl}
+          </button>
+        ))}
       </div>
-    </form>
+
+      {/* Tier */}
+      <label className="block mb-3 font-semibold">Photography Tier</label>
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        {Levels.map((lvl) => (
+          <button
+            key={lvl.level}
+            type="button"
+            onClick={() => toggleTier(lvl.level)}
+            disabled={
+              isSubmitting ||
+              (!userData.portfolio?.declinedDate &&
+                userData.portfolio?.applicationDate != null)
+            }
+            className={`flex flex-col items-center   aspect-square py-2 capitalize rounded-2xl ${isSubmitting ||
+              (!userData.portfolio?.declinedDate &&
+                userData.portfolio?.applicationDate != null)
+              ? "cursor-not-allowed"
+              : "cursor-pointer hover:scale-105"
+              } transition-all border ${tiers.includes(lvl.level)
+                ? "bg-[#FFF4CF]"
+                : "bg-[#FFF4CF] border-transparent"
+              }`}
+          >
+            <img src={lvl.Image} className="h-16 sm:h-20 mb-2" />
+            <p className="text-sm sm:text-base">{lvl.level}</p>
+          </button>
+        ))}
+      </div>
+
+      {/* Price Range */}
+      <label className="block mb-3 font-semibold">Select your Price Range</label>
+      <div className="flex flex-wrap gap-2 mb-6">
+        {priceRange.map((lvl) => (
+          <button
+            key={lvl.id}
+            type="button"
+            onClick={() => togglePriceRange(lvl)}
+            disabled={
+              isSubmitting ||
+              (!userData.portfolio?.declinedDate &&
+                userData.portfolio?.applicationDate != null)
+            }
+            className={`px-4 py-2 rounded-full ${isSubmitting ||
+              (!userData.portfolio?.declinedDate &&
+                userData.portfolio?.applicationDate != null)
+              ? "cursor-not-allowed"
+              : "cursor-pointer hover:scale-105"
+              } transition-all border ${priceRangeSelected?.id === lvl.id
+                ? "bg-[#FFF4CF]"
+                : "bg-[#FFF4CF] border-transparent"
+              }`}
+          >
+            ₱{lvl.min}-₱{lvl.max}
+          </button>
+        ))}
+      </div>
+
+      {/* Equipments */}
+      <label className="block mb-2 font-semibold">Equipments</label>
+      <input
+        type="text"
+        value={equiptments}
+        onChange={(e) => setEquiptments(e.target.value)}
+        disabled={
+          isSubmitting ||
+          (!userData.portfolio?.declinedDate &&
+            userData.portfolio?.applicationDate != null)
+        }
+        className="border rounded-md p-2 w-full mb-4"
+      />
+
+      {/* Portfolio */}
+      <label className="block mb-2 font-semibold">Upload your 5 best photos</label>
+      <PhotoUploadFive
+        images={images5}
+        setImages={setImages5}
+        setFiles={setFiles5}
+        progress={progress5}
+        disabled={
+          isSubmitting ||
+          (!userData.portfolio?.declinedDate &&
+            userData.portfolio?.applicationDate != null)
+        }
+      />
+
+      {/* Portfolio Link */}
+      <label className="block mb-2 font-semibold">
+        Link to your portfolio (optional)
+      </label>
+      <input
+        type="text"
+        value={linkPortfolio}
+        onChange={(e) => setLinkPortfolio(e.target.value)}
+        disabled={
+          isSubmitting ||
+          (!userData.portfolio?.declinedDate &&
+            userData.portfolio?.applicationDate != null)
+        }
+        className="border rounded-md p-2 w-full mb-4"
+      />
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        disabled={
+          isSubmitting ||
+          (!userData.portfolio?.declinedDate &&
+            userData.portfolio?.applicationDate != null)
+        }
+        className={`w-full py-3 ${!userData.portfolio?.declinedDate &&
+          userData.portfolio?.applicationDate != null
+          ? "bg-yellow-600/60 cursor-not-allowed"
+          : "bg-yellow-600 hover:opacity-90"
+          } text-white rounded-lg`}
+      >
+        {isSubmitting
+          ? "Submitting..."
+          : userData.portfolio?.declinedDate
+            ? "Resubmit"
+            : userData.portfolio?.applicationDate
+              ? "Waiting for Approval"
+              : "Submit"}
+      </button>
+    </div>
+  </form>
+
   );
 }

@@ -122,7 +122,7 @@ const App: React.FC = () => {
   const checkNotificationPermission = (): NotificationPermission => {
     if (!("Notification" in window)) return "denied"; // Not supported 
     return Notification.permission; // "granted" | "denied" | "default"
-  }; 
+  };
 
   useEffect(() => {
     // Check location permission
@@ -147,7 +147,7 @@ const App: React.FC = () => {
           </RedirectedRoute>
         } />
 
-        <Route path="/" element={<JoinAsCreatorPage />} />
+        <Route path="/" element={<CreatorApplication />} />
         <Route path="/confirm/email" element={<ConfirmEmail />} />
         <Route path="/application" element={<ProtectedRoute><CreatorApplication /></ProtectedRoute>} />
         <Route path="/signin" element={
